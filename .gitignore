@@ -1,0 +1,4 @@
+nbproject/
+build/
+dist/default/production/*
+!dist/default/production/Thermostat.production.hex
