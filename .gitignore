@@ -1,4 +1,7 @@
 nbproject/
 build/
+dist/default/debug/
 dist/default/production/*
 !dist/default/production/Thermostat.production.hex
+note-to-self*
+app/
