@@ -4,7 +4,6 @@
 
 #pragma config FOSC = HS, WDTE = OFF, PWRTE = OFF, MCLRE = ON, CP = OFF, CPD = OFF, BOREN = OFF, CLKOUTEN = OFF
 #pragma config IESO = OFF, FCMEN = OFF, WRT = OFF, VCAPEN = OFF, PLLEN = OFF, STVREN = OFF, LVP = OFF
-#define _XTAL_FREQ 8000000
 
 // The currently active program
 struct Program *activeProgram = 0;
@@ -66,6 +65,8 @@ void __interrupt() update()
 		if (programs[i].on <= currentTime && currentTime < programs[i].off)
 			activeProgram = programs + i;
 	}
+    //TODO Test if ADC has triggered an interrupt. If yes, send the current temperature to PC
+    
 }
 
 void main(void)
@@ -75,6 +76,7 @@ void main(void)
 	init_eeprom();
 	init_adc();
 	init_comms();
+    
 	// This one should be last to prevent unexpected behavior
 	init_interrupt();
 
