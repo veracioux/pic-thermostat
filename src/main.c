@@ -10,8 +10,6 @@ struct Program *activeProgram = 0;
 
 // Used as a flag for hysteresis
 char risingTemperature = 1;
-// Counts the number of interrupt routine calls, used to measure the current time
-unsigned int interruptTicks = 0;
 
 struct Program programs[PROGRAM_LIMIT];
 
@@ -22,6 +20,11 @@ void init_pins()
 
 void init_eeprom()
 {
+    // Access to program Flash memory is not planned
+    EEPGD = 0;
+    // Access to configuration is not planned
+    CFGS = 0;
+
 	/* TODO
 		Read version code from the EEPROM.
 		If it is lower than VERSION_CODE, read all the programs as appropriate
@@ -31,7 +34,11 @@ void init_eeprom()
 
 void init_interrupt()
 {
-	// Set interrupt interval
+    TMR0IF = 0; // Clear Interrupt Flag
+    TMR0IE = 1; // Enable Timer0 interrupt
+    TMR0CS = 0; // Select internal instruction cycle clock
+    SET_TMR0_PARAMS()
+    GIE = 1;    // Global Interrupt Enable
 }
 
 void init_adc()
@@ -51,34 +58,52 @@ char read_temp()
 	return 0;
 }
 
-// The current time in seconds
-int currentTime = 0;
-unsigned char currentDay;
+// The number of PROGRAM_TIME_UNIT_MICROS microseconds that have elapsed today
+unsigned short programTimeUnitTicks = 0;
+// Microseconds that have elapsed since the last increment of programTimeUnitTicks
+unsigned long elapsedMicros = 0;
+unsigned char currentDay = 0;
 
 void __interrupt() update()
 {
-	// Used to calculate the current time
-	++interruptTicks;
-	for (int i = 0; i < PROGRAM_LIMIT; ++i)
+	if (TMR0IF)
 	{
-		//TODO Test the day
-		if (programs[i].on <= currentTime && currentTime < programs[i].off)
-			activeProgram = programs + i;
+		elapsedMicros += TIME_UPDATE_MICROS;
+		if (elapsedMicros >= PROGRAM_TIME_UNIT_MICROS)
+		{
+			++programTimeUnitTicks;
+			elapsedMicros -= PROGRAM_TIME_UNIT_MICROS;
+			if (programTimeUnitTicks >= 86400000000 / PROGRAM_TIME_UNIT_MICROS)
+			{
+				programTimeUnitTicks = 0;
+                if (currentDay >= 6)
+                    currentDay = 0;
+                else
+                    ++currentDay;
+			}
+		}
+        // Find the program that is currently active
+		for (int i = 0; i < PROGRAM_LIMIT; ++i)
+		{
+			//TODO Test the day
+			if (programs[i].on <= programTimeUnitTicks && programTimeUnitTicks < programs[i].off)
+				activeProgram = programs + i;
+		}
+        TMR0IF = 0;
 	}
     //TODO Test if ADC has triggered an interrupt. If yes, send the current temperature to PC
-    
 }
 
 void main(void)
 {
 	// Initializations
-	init_pins();
+	init_pins(); // Should be first
+
 	init_eeprom();
 	init_adc();
 	init_comms();
-    
-	// This one should be last to prevent unexpected behavior
-	init_interrupt();
+
+	init_interrupt(); // Should be last to prevent unexpected behavior
 
 	char previous = HEATER_OUT;
 	while (1)

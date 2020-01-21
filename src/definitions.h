@@ -15,10 +15,13 @@
 #define INSTRUCTION_CYCLE_NS 500
 
 // Time resolution with which the thermostat can be programmed by the user
-#define TIME_SET_RESOLUTION_MIN 1
+#define PROGRAM_TIME_UNIT_MICROS 60000000U
 
 // Time interval between Timer0 interrupts
-#define TIME_STEP_MS 30000
+#define TIME_UPDATE_MICROS 32768U
+
+// Timer0 pre-load and pre-scaler should be set here, TODO: current values are placeholders
+#define SET_TMR0_PARAMS() {PSA = 0; PS2 = 1; PS1 = 1; PS0 = 1; TMR0 = 0;}
 
 /*
  * Input/Output definitions TODO: currently just placeholders
@@ -50,8 +53,8 @@ struct Program
 {
 	// For now, we store day in a char, and use a negative value to indicate that the program is inactive
 	char day;
-	unsigned int on, off;
-	unsigned int min, max;
+	unsigned short on, off;
+	unsigned short min, max;
 };
 
 #endif
