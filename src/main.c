@@ -1,5 +1,6 @@
 #include <xc.h>
 #include "definitions.h"
+#include "data.h"
 #include "communication.h"
 
 #pragma config FOSC = HS, WDTE = OFF, PWRTE = OFF, MCLRE = ON, CP = OFF, CPD = OFF, BOREN = OFF, CLKOUTEN = OFF
