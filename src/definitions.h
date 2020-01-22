@@ -1,5 +1,4 @@
-#ifndef XC_HEADER_TEMPLATE_H
-#define	XC_HEADER_TEMPLATE_H
+#pragma once
 
 #include <xc.h>
 
@@ -56,5 +55,3 @@ struct Program
 	unsigned short on, off;
 	unsigned short min, max;
 };
-
-#endif

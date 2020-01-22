@@ -1,5 +1,4 @@
-#ifndef COMMUNICATIONS_H
-#define	COMMUNICATIONS_H
+#pragma once
 
 #include <xc.h>
 #include "definitions.h"
@@ -15,5 +14,3 @@ void pc_send_programs(struct Program *programs);
 void pc_send_current_program(struct Program *program);
 
 void pc_send_temp(int temp);
-
-#endif
