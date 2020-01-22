@@ -3,10 +3,6 @@
 #include <xc.h>
 #include "definitions.h"
 
-void eeprom_read_programs(struct Program *programs);
-
-void eeprom_store_programs(struct Program *programs);
-
 void pc_read_programs(struct Program *programs);
 
 void pc_send_programs(struct Program *programs);
