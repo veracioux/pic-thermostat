@@ -48,10 +48,18 @@
 */
 #define VERSION_CODE 0
 
+/*
+ * The EEPROM data space address where program data begins
+ * 
+ * This value can be overwritten if the VERSION_CODE
+ * stored on the EEPROM doesn't match the one currently defined.
+ */
+unsigned char eepromStartAddress = 1;
+
 struct Program
 {
-	// For now, we store day in a char, and use a negative value to indicate that the program is inactive
-	char day;
+	// For now, we store days in chars, and use a negative value of startDay to indicate that the program is inactive
+	char startDay, endDay;
 	unsigned short on, off;
 	unsigned short min, max;
 };

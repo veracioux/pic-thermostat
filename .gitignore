@@ -5,3 +5,4 @@ dist/default/production/*
 !dist/default/production/Thermostat.production.hex
 note-to-self*
 app/
+disassembly/
