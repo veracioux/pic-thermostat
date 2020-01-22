@@ -11,7 +11,7 @@ struct PROGRAM_LIMIT
 ```
 _Note that another bit of information must be included: whether the program is active. This information is coded in the sign of `startDay` - a positive sign indicates that the program is active._
 
-The data structure requires 6 bytes of storage as it is currently defined.
+The data structure requires 10 bytes of storage as it is currently defined.
 
 ---
 
@@ -24,4 +24,4 @@ the definition can be changed based on the following considerations:
 
 * With the current programming resolution of one minute, `on` and `off` need only store values from 0 - 1439 (the number of minutes in a day). Therefore, these attributes require only 11 bits of storage each.
 
-The total amount of storage for the structure with the above optimizations in mind would be 1+6+22 = 29 bits, i.e. 4 bytes.
+The total amount of storage for the structure with the above optimizations in mind would be 1+6+22+32 = 61 bits, i.e. 8 bytes.
