@@ -1,3 +1,53 @@
+## EEPROM Memory Structure
+
+<table>
+    <thead>
+        <tr>
+            <th align="center">Address</th>
+            <th align="center">Content</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td align="center"> 00 </td>
+            <td> VERSION_CODE </td>
+        </tr>
+        <tr>
+            <td align="center" rowspan=2>
+                01 <br>
+                ⋮
+            </td>
+            <td align="left" rowspan=2>
+                Reserved for configuration data. <br>
+                <b>Current version does not use this space.</b>
+            </td>
+        </tr>
+        <tr></tr> <!-- Skip -->
+        <tr>
+            <td align="center" rowspan=3>
+                <code>eepromStartAddress</code> <br>
+                ⋮ <br>
+                EEPROM_SIZE - 1
+            </td>
+            <td align="left" rowspan=3>
+                <br>
+                Program data
+                <br><br>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+Programs are stored in contiguous memory blocks, each of which is `sizeof (struct Program)`
+bytes wide. Thus, the maximum number of programs that can be stored in EEPROM can be
+calculated as:
+
+<center> (EEPROM_SIZE - <code>eepromStartAddress</code>) / <code>sizeof(struct Program)</code> </center>
+
+<br>
+
+With the current configuration, using PIC16F1939, we can store a maximum of 25 programs.
+
 ## `struct Program`
 
 The current data structure for storing a program is defined as follows:
