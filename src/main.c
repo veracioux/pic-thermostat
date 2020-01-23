@@ -1,18 +1,14 @@
 #include <xc.h>
 #include "definitions.h"
 #include "data.h"
+#include "input.h"
 #include "communication.h"
 
 #pragma config FOSC = HS, WDTE = OFF, PWRTE = OFF, MCLRE = ON, CP = OFF, CPD = OFF, BOREN = OFF, CLKOUTEN = OFF
 #pragma config IESO = OFF, FCMEN = OFF, WRT = OFF, VCAPEN = OFF, PLLEN = OFF, STVREN = OFF, LVP = OFF
 
-// The currently active program
-struct Program *activeProgram = 0;
-
 // Used as a flag for hysteresis
 char risingTemperature = 1;
-
-struct Program programs[PROGRAM_LIMIT];
 
 void init_pins()
 {
@@ -31,6 +27,8 @@ void init_eeprom()
 		If it is lower than VERSION_CODE, read all the programs as appropriate
 		and store the VERSION_CODE and the programs in EEPROM using the new scheme.
 	*/
+    
+    //eeprom_read_programs(programs, &programsSize);
 }
 
 void init_interrupt()
@@ -45,18 +43,6 @@ void init_interrupt()
     RCIF = 0;
     
     GIE = 1;    // Global Interrupt Enable
-}
-
-void init_adc()
-{
-
-}
-
-//TODO Determine correct return type
-char read_temp()
-{
-	//TODO
-	return 0;
 }
 
 // The number of PROGRAM_TIME_UNIT_MICROS microseconds that have elapsed today
@@ -119,8 +105,6 @@ void main(void)
 	char previous = HEATER_OUT;
 	while (1)
 	{
-		char temp = read_temp();
-
 		if (previous != HEATER_OUT)
 		{
 			risingTemperature = !risingTemperature;
@@ -128,8 +112,8 @@ void main(void)
 		}
 		// Turn heater relay on/off
 		if (risingTemperature)
-			HEATER_OUT = temp < activeProgram->max;
+			HEATER_OUT = temperature < activeProgram->max;
 		else
-			HEATER_OUT = temp > activeProgram->min;
+			HEATER_OUT = temperature > activeProgram->min;
 	}
 }

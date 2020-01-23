@@ -23,7 +23,7 @@ inline void eeprom_read_data(char address, unsigned char size, void *destination
     }
 }
 
-void eeprom_read_programs(struct Program *programs)
+void eeprom_read_programs(struct Program *programs, unsigned char *size)
 {
     unsigned char addr = eepromStartAddress;
     // Read the number of programs
@@ -33,6 +33,7 @@ void eeprom_read_programs(struct Program *programs)
         dataFlags_bits.READ_ERR = 1;
         return;
     }
+    size = n;
     while (n--)
         eeprom_read_data(addr++, sizeof(struct Program), programs++);
 }

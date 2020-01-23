@@ -2,7 +2,11 @@
 
 #include "definitions.h"
 
-#define FLAG_READ_ERROR 0
+struct Program programs[PROGRAM_LIMIT];
+char programsSize = 1;
+
+// The currently active program
+struct Program *activeProgram = 0;
 
 union
 {
@@ -29,7 +33,7 @@ inline char eeprom_read_byte(char address);
  */
 inline void eeprom_read_data(char address, unsigned char size, void *destination);
 
-void eeprom_read_programs(struct Program *programs);
+void eeprom_read_programs(struct Program *programs, unsigned char *size);
 
 void eeprom_write_byte(char address, char data);
 
