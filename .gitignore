@@ -6,3 +6,5 @@ dist/default/production/*
 note-to-self*
 app/
 disassembly/
+simulation/
+backup/

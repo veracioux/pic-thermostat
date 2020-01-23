@@ -2,16 +2,28 @@
 
 #include <xc.h>
 #include "definitions.h"
+#include "input.h"
+#include "data.h"
+
+/*
+ * Request codes sent by the PC to initiate a data transfer
+ */
+// Verify the connection between the 
+#define CONNECTION_REQUEST '#'
+#define TEMP_TX_REQUEST '$'
+#define PROGRAM_TX_REQUEST '&'
+#define PROGRAMS_RX_REQUEST '<'
+#define PROGRAMS_TX_REQUEST '>'
 
 union
 {
     unsigned char value;
     struct
     {
-        unsigned RX          : 1;
-        unsigned TX          : 1;
-        unsigned ESTABLISHED : 1;
-        unsigned BUSY        : 1;
+        unsigned RX                  : 1; // Set when program data is pending to be received
+        unsigned TX                  : 1; // Set when data is pending to be sent
+        unsigned ESTABLISHED         : 1; // Set when a CONNECTION_REQUEST character is received, cleared if an error occurs during transmission
+        unsigned BUSY                : 1; // Set if any RX/TX operations are 
     };
 } commFlags;
 
@@ -29,8 +41,8 @@ void pc_send_program(struct Program *program);
 
 void pc_read_program(struct Program *program);
 
-void pc_read_programs(struct Program *programs, unsigned char nPrograms);
-
 void pc_send_programs(struct Program *programs, unsigned char nPrograms);
+
+void pc_read_programs(struct Program *programs, unsigned char nPrograms);
 
 void pc_send_temp(unsigned short temp);
