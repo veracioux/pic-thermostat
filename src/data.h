@@ -3,7 +3,7 @@
 #include "definitions.h"
 
 struct Program programs[PROGRAM_LIMIT];
-char programsSize = 1;
+unsigned char versionCode = 0, programsSize = 1;
 
 // The currently active program
 struct Program *activeProgram = 0;

@@ -28,7 +28,7 @@ void init_eeprom()
 		and store the VERSION_CODE and the programs in EEPROM using the new scheme.
 	*/
     
-    //eeprom_read_programs(programs, &programsSize);
+    eeprom_read_programs(programs, &programsSize);
 }
 
 void init_interrupt()
@@ -42,6 +42,7 @@ void init_interrupt()
     RCIE = 1;   // Enable RX Interrupt
     RCIF = 0;
     
+    PEIE = 1;
     GIE = 1;    // Global Interrupt Enable
 }
 
