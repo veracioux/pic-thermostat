@@ -23,6 +23,13 @@
 #define SET_TMR0_PARAMS() {PSA = 0; PS2 = 1; PS1 = 1; PS0 = 1; TMR0 = 0;}
 
 /*
+ * Communication configuration
+ */
+#define BAUD_RATE 9600
+// Baud rate initialization bits should be set here, to match BAUD_RATE
+#define SET_BAUD_PARAMS() {BRG16= 0; BRGH = 0; SPBRGH = 0; SPBRGL = 12;}
+
+/*
  * Input/Output definitions TODO: currently just placeholders
  */
 #define HEATER_OUT PORTCbits.RC0
