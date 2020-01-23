@@ -16,7 +16,7 @@ struct Program programs[PROGRAM_LIMIT];
 
 void init_pins()
 {
-
+    
 }
 
 void init_eeprom()
@@ -39,15 +39,15 @@ void init_interrupt()
     TMR0IE = 1; // Enable Timer0 interrupt
     TMR0CS = 0; // Select internal instruction cycle clock
     SET_TMR0_PARAMS()
+            
+    TXIE = 1;   // Enable TX Interrupt
+    RCIE = 1;   // Enable RX Interrupt
+    RCIF = 0;
+    
     GIE = 1;    // Global Interrupt Enable
 }
 
 void init_adc()
-{
-
-}
-
-void init_comms()
 {
 
 }
@@ -75,7 +75,7 @@ void __interrupt() update()
 			++programTimeUnitTicks;
 			elapsedMicros -= PROGRAM_TIME_UNIT_MICROS;
 			if (programTimeUnitTicks >= 86400000000 / PROGRAM_TIME_UNIT_MICROS)
-			{
+			{ // A new day has come
 				programTimeUnitTicks = 0;
                 if (currentDay >= 6)
                     currentDay = 0;
@@ -93,6 +93,16 @@ void __interrupt() update()
         TMR0IF = 0;
 	}
     //TODO Test if ADC has triggered an interrupt. If yes, send the current temperature to PC
+    if (RCIF)
+    {
+        processReceiveInterrupt();
+        RCIF = 0;
+    }
+    else if (TXIF)
+    {
+        processTransmitInterrupt();
+        TXIF = 0;
+    }
 }
 
 void main(void)
@@ -105,7 +115,7 @@ void main(void)
 	init_comms();
 
 	init_interrupt(); // Should be last to prevent unexpected behavior
-
+    
 	char previous = HEATER_OUT;
 	while (1)
 	{
