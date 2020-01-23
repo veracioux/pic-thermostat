@@ -2,6 +2,18 @@
 
 #include "definitions.h"
 
+#define FLAG_READ_ERROR 0
+
+union
+{
+    struct
+    {
+        unsigned unused : 6;
+        unsigned WRITE_ERR  : 1;
+        unsigned READ_ERR  : 1;
+    };
+} dataFlags;
+
 inline char eeprom_read_byte(char address);
 
 /*
