@@ -24,8 +24,14 @@
         </tr>
         <tr></tr> <!-- Skip -->
         <tr>
+            <td align="center">
+                <code>eepromStartAddress</code>
+            </td>
+            <td>Number of programs stored in the EEPROM</td>
+        </tr>
+        <tr>
             <td align="center" rowspan=3>
-                <code>eepromStartAddress</code> <br>
+                <code>eepromStartAddress</code> + 1 <br>
                 ⋮ <br>
                 EEPROM_SIZE - 1
             </td>
@@ -42,9 +48,8 @@ Programs are stored in contiguous memory blocks, each of which is `sizeof (struc
 bytes wide. Thus, the maximum number of programs that can be stored in EEPROM can be
 calculated as:
 
-<center> (EEPROM_SIZE - <code>eepromStartAddress</code>) / <code>sizeof(struct Program)</code> </center>
-
-<br>
+<center> (EEPROM_SIZE - 1 - <code>eepromStartAddress</code>) / <code>sizeof(struct Program)</code> </center>
+<br><br>
 
 With the current configuration, using PIC16F1939, we can store a maximum of 25 programs.
 
