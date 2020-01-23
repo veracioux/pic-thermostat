@@ -25,7 +25,7 @@ void processTransmitInterrupt()
     if (commFlags.ESTABLISHED && commFlags.TX)
     {
         if (--commStatus.remaining == 0)
-            commFlags.BUSY = commFlags.RX = 0;
+            commFlags.BUSY = commFlags.TX = 0;
         TXREG = *commStatus.ptrData++;
     }
 }
