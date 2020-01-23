@@ -8,7 +8,7 @@
 /*
  * Request codes sent by the PC to initiate a data transfer
  */
-// Verify the connection between the 
+// Verify the connection between the PIC and the PC
 #define CONNECTION_REQUEST '#'
 #define TEMP_TX_REQUEST '$'
 #define PROGRAM_TX_REQUEST '&'

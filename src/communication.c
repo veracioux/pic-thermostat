@@ -18,6 +18,8 @@ struct
     unsigned char remaining;
     // Pointer to the next byte
     char *ptrData;
+    // Flag that indicates the stage
+    char stage;
 } commStatus;
 
 void processTransmitInterrupt()
@@ -53,8 +55,8 @@ void processReceiveInterrupt()
             else if (tmp == PROGRAMS_RX_REQUEST)
                 pc_read_programs(programs, programsSize);
         }
-        // Send/receive the current buffer
-        if (commFlags.RX)
+        // Receive the current buffer
+        else if (commFlags.RX)
         {
             if (--commStatus.remaining == 0)
                 commFlags.BUSY = commFlags.RX = 0;
