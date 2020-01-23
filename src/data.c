@@ -1,5 +1,10 @@
 #include "data.h"
 
+void processDataInterrupt()
+{
+    
+}
+
 inline char eeprom_read_byte(char address)
 {
     EEADRL = address;
@@ -25,9 +30,27 @@ void eeprom_read_programs(struct Program *programs)
     unsigned char n = eeprom_read_byte(addr++);
     if (n > PROGRAM_LIMIT)
     {
-        dataFlags.READ_ERR = 1;
+        dataFlags_bits.READ_ERR = 1;
         return;
     }
     while (n--)
         eeprom_read_data(addr++, sizeof(struct Program), programs++);
+}
+
+void eeprom_write_byte(char address, char data)
+{
+    EEADRL = address;
+    EEDATL = data;
+    WREN = 1;
+    GIE = 1;
+    EECON2 = 0x55;
+    EECON2 = 0xAA;
+    WR = 1;
+    GIE = 1;
+    WREN = 0;
+}
+
+void eeprom_store_programs(struct Program *programs)
+{
+    
 }

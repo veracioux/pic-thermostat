@@ -6,13 +6,17 @@
 
 union
 {
+    unsigned char value;
     struct
     {
-        unsigned unused : 6;
-        unsigned WRITE_ERR  : 1;
-        unsigned READ_ERR  : 1;
+        unsigned ONGOING_WRITE : 1;
+        unsigned WRITE_ERR     : 1;
+        unsigned READ_ERR      : 1;
     };
-} dataFlags;
+} dataFlags_bits;
+#define dataFlags dataFlags_bits.value
+
+void processDataInterrupt();
 
 inline char eeprom_read_byte(char address);
 
@@ -26,5 +30,7 @@ inline char eeprom_read_byte(char address);
 inline void eeprom_read_data(char address, unsigned char size, void *destination);
 
 void eeprom_read_programs(struct Program *programs);
+
+void eeprom_write_byte(char address, char data);
 
 void eeprom_store_programs(struct Program *programs);
