@@ -1,42 +1,93 @@
 #include "communication.h"
 
-
 void init_comms()
 {
+    commFlags.value = 0;
     SYNC = 0;
     SET_BAUD_PARAMS()
     TX9 = 0;
     RX9 = 0;
     SPEN = 1;
+    TXEN = 1;
     CREN = 1;
 }
 
-void processCommInterrupt()
+struct
 {
-    
+    // Remaining number of bytes to send/receive
+    unsigned char remaining;
+    // Pointer to the next byte
+    char *ptrData;
+} commStatus;
+
+void processTransmitInterrupt()
+{
+    if (commFlags.ESTABLISHED && commFlags.TX)
+    {
+        if (--commStatus.remaining == 0)
+            commFlags.BUSY = commFlags.RX = 0;
+        TXREG = *commStatus.ptrData++;
+    }
 }
 
-inline void send_byte(char byte)
+void processReceiveInterrupt()
 {
-    TXREG = byte;
+    // Connection is established when a # character is received
+    if (!commFlags.ESTABLISHED && RCREG == '#')
+        commFlags.ESTABLISHED = 1;
+    else if (commFlags.ESTABLISHED && commFlags.RX)
+    {
+        if (--commStatus.remaining == 0)
+            commFlags.BUSY = commFlags.RX = 0;
+        *commStatus.ptrData++ = RCREG;
+    }
 }
 
-void pc_read_programs(struct Program *programs)
+void pc_send_data(void *data, unsigned char size)
 {
-    
+    if (commFlags.BUSY)
+        return;
+    GIE = 0;
+    commFlags.BUSY = 1;
+    commFlags.TX = 1;
+    commStatus.remaining = size;
+    commStatus.ptrData = data;
+    GIE = 1;
 }
 
-void pc_send_programs(struct Program *programs)
+void pc_read_data(void *data, unsigned char size)
 {
-    
+    if (commFlags.BUSY)
+        return;
+    GIE = 0;
+    commFlags.BUSY = 1;
+    commFlags.RX = 1;
+    commStatus.remaining = size;
+    commStatus.ptrData = data;
+    GIE = 1;
 }
 
-void pc_send_current_program(struct Program *program)
+void pc_send_program(struct Program *program)
 {
-    
+    pc_send_data(program, sizeof(struct Program));
+}
+
+void pc_read_program(struct Program *program)
+{
+    pc_read_data(program, sizeof(struct Program));
+}
+
+void pc_send_programs(struct Program *programs, unsigned char nPrograms)
+{
+    pc_send_data(programs, nPrograms * sizeof(struct Program));
+}
+
+void pc_read_programs(struct Program *programs, unsigned char nPrograms)
+{
+    pc_read_data(programs, nPrograms * sizeof(struct Program));
 }
 
 void pc_send_temp(unsigned short temp)
 {
-    
+    pc_send_data(&temp, sizeof temp);
 }

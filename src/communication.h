@@ -8,25 +8,29 @@ union
     unsigned char value;
     struct
     {
-        unsigned unused      : 5;
+        unsigned RX          : 1;
+        unsigned TX          : 1;
         unsigned ESTABLISHED : 1;
-        unsigned DIRECTION   : 1; // 1 = From PC to PIC 
-                                  // 0 = From PIC to PC
-        unsigned BUSY        : 1; // Are any TX/RX operations taking place?
+        unsigned BUSY        : 1;
     };
-} commFlags_bits;
-#define commFlags commFlags_bits.value
+} commFlags;
 
 void init_comms();
 
-void processCommInterrupt();
+void processTransmitInterrupt();
 
-inline void send_byte(char byte);
+void processReceiveInterrupt();
 
-void pc_read_programs(struct Program *programs);
+void pc_send_data(void *data, unsigned char size);
 
-void pc_send_programs(struct Program *programs);
+void pc_read_data(void *data, unsigned char size);
 
-void pc_send_current_program(struct Program *program);
+void pc_send_program(struct Program *program);
+
+void pc_read_program(struct Program *program);
+
+void pc_read_programs(struct Program *programs, unsigned char nPrograms);
+
+void pc_send_programs(struct Program *programs, unsigned char nPrograms);
 
 void pc_send_temp(unsigned short temp);
