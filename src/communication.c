@@ -47,7 +47,7 @@ void processReceiveInterrupt()
         {
             char tmp = RCREG;
             if (tmp == TEMP_TX_REQUEST)
-                pc_send_temp(temperature);
+                pc_send_temp(&temperature);
             else if (tmp == PROGRAM_TX_REQUEST)
                 pc_send_program(activeProgram);
             else if (tmp == PROGRAMS_TX_REQUEST)
@@ -109,7 +109,7 @@ void pc_read_programs(struct Program *programs, unsigned char nPrograms)
     pc_read_data(programs, nPrograms * sizeof(struct Program));
 }
 
-void pc_send_temp(unsigned short temp)
+void pc_send_temp(unsigned short *temp)
 {
-    pc_send_data(&temp, sizeof temp);
+    pc_send_data(temp, sizeof(short));
 }
