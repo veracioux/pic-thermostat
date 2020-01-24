@@ -10,6 +10,8 @@
  */
 // Verify the connection between the PIC and the PC
 #define CONNECTION_REQUEST '#'
+#define TIME_TX_REQUEST 'T'
+#define TIME_RX_REQUEST 't'
 #define TEMP_TX_REQUEST '$'
 #define PROGRAM_TX_REQUEST '&'
 #define PROGRAMS_RX_REQUEST '<'
