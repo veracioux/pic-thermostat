@@ -13,6 +13,8 @@
 #define TIME_TX_REQUEST 'T'
 #define TIME_RX_REQUEST 't'
 #define TEMP_TX_REQUEST '$'
+#define TIME_TX_REQUEST 'T'
+#define TIME_RX_REQUEST 't'
 #define PROGRAM_TX_REQUEST '&'
 #define PROGRAMS_RX_REQUEST '<'
 #define PROGRAMS_TX_REQUEST '>'
@@ -47,4 +49,6 @@ void pc_send_programs(struct Program *programs, unsigned char nPrograms);
 
 void pc_read_programs(struct Program *programs, unsigned char nPrograms);
 
-void pc_send_temp(unsigned short temp);
+void pc_send_temp(unsigned short *temp);
+
+void pc_send_time(unsigned short *time);
