@@ -8,16 +8,16 @@
 /*
  * Request codes sent by the PC to initiate a data transfer
  */
-// Verify the connection between the PIC and the PC
-#define CONNECTION_REQUEST '#'
-#define TIME_TX_REQUEST 'T'
-#define TIME_RX_REQUEST 't'
-#define TEMP_TX_REQUEST '$'
-#define TIME_TX_REQUEST 'T'
-#define TIME_RX_REQUEST 't'
-#define PROGRAM_TX_REQUEST '&'
-#define PROGRAMS_RX_REQUEST '<'
-#define PROGRAMS_TX_REQUEST '>'
+#define REQUEST_CONNECTION '#'
+
+#define REQUEST_RX_TEMP '$'
+#define REQUEST_RX_TIME 'T'
+#define REQUEST_RX_CURRENT_PROGRAM '&'
+#define REQUEST_RX_PROGRAMS '>'
+
+#define REQUEST_TX_TIME 't'
+#define REQUEST_TX_PROGRAM 'p'
+#define REQUEST_TX_PROGRAMS '<'
 
 union
 {
