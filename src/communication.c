@@ -38,7 +38,7 @@ void processTransmitInterrupt()
 void processReceiveInterrupt()
 {
     // Connection is established when a # character is received
-    if (!commFlags.ESTABLISHED && !commFlags.BUSY && RCREG == CONNECTION_REQUEST)
+    if (!commFlags.ESTABLISHED && !commFlags.BUSY && RCREG == REQUEST_CONNECTION)
         commFlags.ESTABLISHED = 1;
     else if (commFlags.ESTABLISHED)
     {
@@ -46,13 +46,14 @@ void processReceiveInterrupt()
         if (!commFlags.BUSY)
         {
             char tmp = RCREG;
-            if (tmp == TEMP_TX_REQUEST)
+            
+            if (tmp == REQUEST_RX_TEMP)
                 pc_send_temp(&temperature);
-            else if (tmp == PROGRAM_TX_REQUEST)
+            else if (tmp == REQUEST_RX_CURRENT_PROGRAM)
                 pc_send_program(activeProgram);
-            else if (tmp == PROGRAMS_TX_REQUEST)
+            else if (tmp == REQUEST_RX_PROGRAMS)
                 pc_send_programs(programs, programsSize);
-            else if (tmp == PROGRAMS_RX_REQUEST)
+            else if (tmp == REQUEST_TX_PROGRAMS)
                 pc_read_programs(programs, programsSize);
         }
         // Receive the current buffer
