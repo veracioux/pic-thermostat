@@ -105,7 +105,7 @@ Request the current measured temperature. Upon reception, the microcontroller se
 
 ##### `REQUEST_RX_TIME`
 
-Request the current time on the thermostat. Upon reception, the microcontroller then sends raw time data as a sequence of bytes.
+Request the current time on the thermostat. Upon reception, the microcontroller sends raw time data as a sequence of bytes.
 
 ##### `REQUEST_RX_CURRENT_PROGRAM`
 
@@ -131,4 +131,55 @@ Request all programs on the thermostat to be overriden by the sent data. If the 
 
 #### Software implementation
 
-//TODO
+##### 1. Processing requests
+All communications are done using interrupts. Whenever the PC sends data to the microcontroller, a receive interrupt is triggered (the `RCIF` bit is set). The interrupt routine is called, which in turn calls `processReceiveInterrupt()` in ["/src/communication.h"](https://github.com/HarisGusic/pic-thermostat/blob/master/src/communication.h). This function is where the received data is interpreted and processed.
+
+If the connection has not yet been established, and a `REQUEST_CONNECTION` character/byte has been received, the `commFlags.ESTABLISHED` bit is set. Otherwise, if the connection has been established and a `REQUEST_TX`/`RX` request is sent, this function queues the data transfer by calling the corresponding `pc_read_*` or `pc_send_*` function.
+
+If a `REQUEST_RX` has been received, the called `pc_send_*` function will do the following:
+
+* Set the `commFlags.TX` and `commFlags.BUSY` bits.
+
+* Set the value of `commStatus.remaining` to the size of the data (in bytes) to send.
+
+* Set the pointer `commStatus.ptrData` to point to the beginning of the data to send.
+
+* Set the `TXIE` bit to enable transmit interrupts.
+
+If a `REQUEST_TX` has been received, the called `pc_read_*` function will do the following:
+
+* Set the `commFlags.RX` and `commFlags.BUSY` bits.
+
+* Set the value of `commStatus.remaining` to the size of the data (in bytes) to receive.
+
+* Set the pointer `commStatus.ptrData` to point to the memory location where the received data is to be written.
+
+While all of this is being done, the functions will disable all interrupts to prevent unspecified behavior.
+
+##### 2. Transferring data
+
+###### Receiving data
+
+Reception of data begins once the `commFlags.RX` bit has been set. As before, each new byte of incoming data will trigger an interrupt, which will call `processReceiveInterrupt()`. By checking `commFlags.RX`, this function will determine that a receive operation is in progress and will do the following:
+
+* Push the byte of received data (stored in `RCREG`) into the block of memory pointed to by `commStatus.ptrData`.
+
+* Advance `commStatus.ptrData` by one.
+
+* Decrement `commStatus.remaining` by one.
+
+* If `commStatus.remaining` reaches zero, clear `commFlags.RX` and `commFlags.BUSY`, indicating that the operation has finished.
+
+If the PC fails to send any byte of data within two increments of Timer0, the receive operation will be aborted. This is done by checking the `commTimeout` variable. Namely `commTimeout` will be set to 0 each time a receive operation is queued or a new byte of data is received. On each increment of Timer0, `commTimeout` will be incremented by 1. If it reaches the value 2, the receive operation will be aborted by clearing `commFlags.RX` and `commFlags.BUSY`.
+
+###### Sending data
+
+Transmission of data begins once the `commFlags.TX` bit has been set. This implies that the `TXIE` bit has also been set. This will cause an interrupt to be generated whenever the `TXREG` buffer is empty. The interrupt routine will call `processTransmitInterrupt()`, which will do the following:
+
+* Push the next byte of data (pointed to by `commStatus.ptrData`) into the `TXREG` buffer.
+
+* Advance `commStatus.ptrData` by one.
+
+* Decrement `commStatus.remaining` by one.
+
+* If `commStatus.remaining` reaches zero, clear `commFlags.TX`, `commFlags.BUSY` and `TXIE`, indicating that the operation has finished.
