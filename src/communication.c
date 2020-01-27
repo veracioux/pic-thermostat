@@ -29,7 +29,7 @@ void processTransmitInterrupt()
         if (commFlags.TX)
         {
             if (--commStatus.remaining == 0)
-                commFlags.BUSY = commFlags.TX = 0;
+                commFlags.BUSY = commFlags.TX = TXIE = 0;
             TXREG = *commStatus.ptrData++;
         }
     }
@@ -59,11 +59,17 @@ void processReceiveInterrupt()
         // Receive the current buffer
         else if (commFlags.RX)
         {
+            commTimeout = 0;
             if (--commStatus.remaining == 0)
                 commFlags.BUSY = commFlags.RX = 0;
             *commStatus.ptrData++ = RCREG;
         }
     }
+}
+
+void abortReceive()
+{
+    commFlags.RX = commFlags.BUSY = 0;
 }
 
 void pc_send_data(void *data, unsigned char size)
@@ -75,6 +81,7 @@ void pc_send_data(void *data, unsigned char size)
     commFlags.TX = 1;
     commStatus.remaining = size;
     commStatus.ptrData = data;
+    TXIE = 1;
     GIE = 1;
 }
 

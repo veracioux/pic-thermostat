@@ -38,7 +38,7 @@ void init_interrupt()
     TMR0CS = 0; // Select internal instruction cycle clock
     SET_TMR0_PARAMS()
             
-    TXIE = 1;   // Enable TX Interrupt
+    TXIE = 0;   // Disable TX Interrupt until a request is received
     RCIE = 1;   // Enable RX Interrupt
     RCIF = 0;
     
@@ -70,6 +70,9 @@ void __interrupt() update()
                     ++currentDay;
 			}
 		}
+        // Communications timeout
+        if (commFlags.RX && ++commTimeout >= 2)
+            abortReceive();
         // Find the program that is currently active
 		for (int i = 0; i < PROGRAM_LIMIT; ++i)
 		{
@@ -92,7 +95,7 @@ void __interrupt() update()
     }
 }
 
-void main(void)
+void main()
 {
 	// Initializations
 	init_pins(); // Should be first

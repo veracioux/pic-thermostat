@@ -19,6 +19,8 @@
 #define REQUEST_TX_PROGRAM 'p'
 #define REQUEST_TX_PROGRAMS '<'
 
+unsigned char commTimeout = 0;
+
 union
 {
     unsigned char value;
@@ -27,7 +29,7 @@ union
         unsigned RX                  : 1; // Set when program data is pending to be received
         unsigned TX                  : 1; // Set when data is pending to be sent
         unsigned ESTABLISHED         : 1; // Set when a CONNECTION_REQUEST character is received, cleared if an error occurs during transmission
-        unsigned BUSY                : 1; // Set if any RX/TX operations are 
+        unsigned BUSY                : 1; // Set if any RX/TX operations are active
     };
 } commFlags;
 
@@ -36,6 +38,8 @@ void init_comms();
 void processTransmitInterrupt();
 
 void processReceiveInterrupt();
+
+void abortReceive();
 
 void pc_send_data(void *data, unsigned char size);
 
