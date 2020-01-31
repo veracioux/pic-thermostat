@@ -1,3 +1,7 @@
+/*
+ * Define all constant parameters and specifications for the thermostat.
+ * Should always be kept up-to-date with the documentation.
+ */
 #pragma once
 
 #include <xc.h>
@@ -69,4 +73,12 @@ struct Program
 	char startDay, endDay;
 	unsigned short on, off;
 	unsigned short min, max;
+};
+
+struct Time
+{
+    // The day of week
+    unsigned char day;
+    // The number of PROGRAM_TIME_UNIT_MICROS microseconds that have elapsed today.
+    unsigned short timeOfDay;
 };

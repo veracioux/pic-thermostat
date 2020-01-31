@@ -1,3 +1,8 @@
+/*
+ * Holds all functions used for EEPROM R/W operations.
+ * Additionally, this header holds data about all stored
+ * programs and parameters of the currently active program
+ */
 #pragma once
 
 #include "definitions.h"
@@ -7,6 +12,12 @@ unsigned char versionCode = 0, programsSize = 1;
 
 // The currently active program
 struct Program *activeProgram = 0;
+
+
+/*
+ * The current time on the microcontroller.
+ */
+struct Time currentTime;
 
 union
 {

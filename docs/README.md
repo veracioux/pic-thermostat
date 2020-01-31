@@ -170,7 +170,7 @@ Reception of data begins once the `commFlags.RX` bit has been set. As before, ea
 
 * If `commStatus.remaining` reaches zero, clear `commFlags.RX` and `commFlags.BUSY`, indicating that the operation has finished.
 
-If the PC fails to send any byte of data within two increments of Timer0, the receive operation will be aborted. This is done by checking the `commTimeout` variable. Namely `commTimeout` will be set to 0 each time a receive operation is queued or a new byte of data is received. On each increment of Timer0, `commTimeout` will be incremented by 1. If it reaches the value 2, the receive operation will be aborted by clearing `commFlags.RX` and `commFlags.BUSY`.
+If the PC fails to send any byte of data within two increments of Timer0, the receive operation will be aborted. This is done by checking the `commTimeout` variable. Namely `commTimeout` will be set to 0 each time a receive operation is queued or a new byte of data is received. On each increment of Timer0, `commTimeout` will be incremented by 1. If it reaches the value 2, the receive operation will be aborted by calling `abortReceive()`.
 
 ###### Sending data
 
