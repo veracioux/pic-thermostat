@@ -66,17 +66,17 @@ void __interrupt() update()
                 else
                     ++currentTime.day;
 			}
+            // Find the program that is currently active
+            for (int i = 0; i < PROGRAM_LIMIT; ++i)
+            {
+                if (programs[i].startDay >= currentTime.day && programs[i].endDay <= currentTime.day
+                        && programs[i].on <= currentTime.timeOfDay && currentTime.timeOfDay < programs[i].off)
+                    activeProgram = programs + i;
+            }
 		}
         // Communications timeout
         if (commFlags.RX && ++commTimeout >= 2)
             abortReceive();
-        // Find the program that is currently active
-		for (int i = 0; i < PROGRAM_LIMIT; ++i)
-		{
-			if (programs[i].startDay >= currentTime.day && programs[i].endDay <= currentTime.day
-                    && programs[i].on <= currentTime.timeOfDay && currentTime.timeOfDay < programs[i].off)
-				activeProgram = programs + i;
-		}
         TMR0IF = 0;
 	}
     //TODO Test if ADC has triggered an interrupt. If yes, send the current temperature to PC
