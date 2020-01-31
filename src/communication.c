@@ -29,7 +29,7 @@ void processTransmitInterrupt()
         if (commFlags.TX)
         {
             if (--commStatus.remaining == 0)
-                commFlags.BUSY = commFlags.TX = 0;
+                commFlags.BUSY = commFlags.TX = TXIE = 0;
             TXREG = *commStatus.ptrData++;
         }
     }
@@ -38,7 +38,7 @@ void processTransmitInterrupt()
 void processReceiveInterrupt()
 {
     // Connection is established when a # character is received
-    if (!commFlags.ESTABLISHED && !commFlags.BUSY && RCREG == CONNECTION_REQUEST)
+    if (!commFlags.ESTABLISHED && !commFlags.BUSY && RCREG == REQUEST_CONNECTION)
         commFlags.ESTABLISHED = 1;
     else if (commFlags.ESTABLISHED)
     {
@@ -46,23 +46,32 @@ void processReceiveInterrupt()
         if (!commFlags.BUSY)
         {
             char tmp = RCREG;
-            if (tmp == TEMP_TX_REQUEST)
-                pc_send_temp(temperature);
-            else if (tmp == PROGRAM_TX_REQUEST)
+            
+            if (tmp == REQUEST_RX_TEMP)
+                pc_send_temp(&temperature);
+            else if (tmp == REQUEST_RX_TIME)
+                pc_send_time(&currentTime);
+            else if (tmp == REQUEST_RX_CURRENT_PROGRAM)
                 pc_send_program(activeProgram);
-            else if (tmp == PROGRAMS_TX_REQUEST)
+            else if (tmp == REQUEST_RX_PROGRAMS)
                 pc_send_programs(programs, programsSize);
-            else if (tmp == PROGRAMS_RX_REQUEST)
+            else if (tmp == REQUEST_TX_PROGRAMS)
                 pc_read_programs(programs, programsSize);
         }
         // Receive the current buffer
         else if (commFlags.RX)
         {
+            commTimeout = 0;
             if (--commStatus.remaining == 0)
                 commFlags.BUSY = commFlags.RX = 0;
             *commStatus.ptrData++ = RCREG;
         }
     }
+}
+
+void abortReceive()
+{
+    commFlags.RX = commFlags.BUSY = 0;
 }
 
 void pc_send_data(void *data, unsigned char size)
@@ -74,6 +83,7 @@ void pc_send_data(void *data, unsigned char size)
     commFlags.TX = 1;
     commStatus.remaining = size;
     commStatus.ptrData = data;
+    TXIE = 1;
     GIE = 1;
 }
 
@@ -109,7 +119,17 @@ void pc_read_programs(struct Program *programs, unsigned char nPrograms)
     pc_read_data(programs, nPrograms * sizeof(struct Program));
 }
 
-void pc_send_temp(unsigned short temp)
+void pc_send_temp(unsigned short *temp)
 {
-    pc_send_data(&temp, sizeof temp);
+    pc_send_data(temp, sizeof(short));
+}
+
+void pc_send_time(struct Time *time)
+{
+    pc_send_data(time, sizeof(struct Time));
+}
+
+void pc_read_time(struct Time *time)
+{
+    pc_read_data(time, sizeof(struct Time));
 }
