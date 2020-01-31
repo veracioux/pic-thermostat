@@ -49,6 +49,8 @@ void processReceiveInterrupt()
             
             if (tmp == REQUEST_RX_TEMP)
                 pc_send_temp(&temperature);
+            else if (tmp == REQUEST_RX_TIME)
+                pc_send_time(&currentTime);
             else if (tmp == REQUEST_RX_CURRENT_PROGRAM)
                 pc_send_program(activeProgram);
             else if (tmp == REQUEST_RX_PROGRAMS)
@@ -120,4 +122,14 @@ void pc_read_programs(struct Program *programs, unsigned char nPrograms)
 void pc_send_temp(unsigned short *temp)
 {
     pc_send_data(temp, sizeof(short));
+}
+
+void pc_send_time(struct Time *time)
+{
+    pc_send_data(time, sizeof(struct Time));
+}
+
+void pc_read_time(struct Time *time)
+{
+    pc_read_data(time, sizeof(struct Time));
 }

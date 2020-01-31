@@ -55,4 +55,6 @@ void pc_read_programs(struct Program *programs, unsigned char nPrograms);
 
 void pc_send_temp(unsigned short *temp);
 
-void pc_send_time(unsigned short *time);
+void pc_send_time(struct Time *time);
+
+void pc_read_time(struct Time *time);
