@@ -61,4 +61,4 @@ _<span>* Any value can be assigned</span>_
 
 | EEPGD |  CFGS  |   LWLO   |  FREE  |  WRERR  |   WREN   |    WR    |    RD    |
 | :---: | :----: | :------: | :----: | :-----: | :------: | :------: | :------: |
-|   1   |   1    |  Unused  | Unused | Unused  |     0    | 0 (Auto) | 0 (Auto) |
+|   0   |   0    |  Unused  | Unused | Unused  |     0    | 0 (Auto) | 0 (Auto) |
