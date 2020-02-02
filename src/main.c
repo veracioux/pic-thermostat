@@ -10,6 +10,17 @@
 // Used as a flag for hysteresis
 char risingTemperature = 1;
 
+void init_pins()
+{
+    TRISA = 0xFF;
+    ANSELA = 1;
+    
+    TRISC = 0b10111110;
+    
+    TRISD = 0b11111110;
+    ANSELD = 0;
+}
+
 void init_eeprom()
 {
     // Access to program Flash memory is not planned
