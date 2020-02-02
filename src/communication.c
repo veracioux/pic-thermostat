@@ -72,6 +72,7 @@ void processReceiveInterrupt()
 void abortReceive()
 {
     commFlags.RX = commFlags.BUSY = 0;
+    commTimeout = 0;
 }
 
 void pc_send_data(void *data, unsigned char size)

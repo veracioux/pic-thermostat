@@ -10,11 +10,6 @@
 // Used as a flag for hysteresis
 char risingTemperature = 1;
 
-void init_pins()
-{
-    
-}
-
 void init_eeprom()
 {
     // Access to program Flash memory is not planned
