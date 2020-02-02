@@ -45,6 +45,11 @@
 // If you change this, also change TEMPERATURE_IN_CHANNEL_SELECT accordingly
 #define TEMPERATURE_IN PORTAbits.RA0
 
+void init_pins()
+{
+    
+}
+
 // Value of ADCON0.CHS bits
 #define TEMPERATURE_IN_CHANNEL_SELECT 0
 
