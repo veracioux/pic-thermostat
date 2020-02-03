@@ -67,18 +67,16 @@
  */
 unsigned char eepromStartAddress = 1;
 
-struct Program
-{
-	// For now, we store days in chars, and use a negative value of startDay to indicate that the program is inactive
-	char startDay, endDay;
-	unsigned short on, off;
-	unsigned short min, max;
-};
-
 struct Time
 {
     // The day of week
     unsigned char day;
     // The number of PROGRAM_TIME_UNIT_MICROS microseconds that have elapsed today.
     unsigned short timeOfDay;
+};
+
+struct Program
+{
+	struct Time start, end;
+	unsigned short min, max;
 };

@@ -75,8 +75,8 @@ void __interrupt() update()
             // Find the program that is currently active
             for (int i = 0; i < PROGRAM_LIMIT; ++i)
             {
-                if (programs[i].startDay >= currentTime.day && programs[i].endDay <= currentTime.day
-                        && programs[i].on <= currentTime.timeOfDay && currentTime.timeOfDay < programs[i].off)
+                if (programs[i].start.day >= currentTime.day && programs[i].end.day <= currentTime.day
+                        && programs[i].start.timeOfDay <= currentTime.timeOfDay && currentTime.timeOfDay < programs[i].end.timeOfDay)
                     activeProgram = programs + i;
             }
 		}
