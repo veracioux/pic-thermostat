@@ -37,7 +37,7 @@
  * Input/Output definitions TODO: currently just placeholders
  */
 #define HEATER_OUT PORTCbits.RC0
-#define HEATER_INDICATOR_OUT PORTCbits.RD0
+#define HEATER_INDICATOR_OUT PORTDbits.RD0
 #define TX_OUT PORTCbits.RC6
 
 #define RX_IN PORTCbits.RC7

@@ -122,15 +122,20 @@ void main()
 	char previous = HEATER_OUT;
 	while (1)
 	{
+        read_temp();
 		if (previous != HEATER_OUT)
 		{
 			risingTemperature = !risingTemperature;
 			previous = HEATER_OUT;
 		}
-		// Turn heater relay on/off
-		if (risingTemperature)
+        
+        // Turn heater relay on/off
+        if (activeProgram == 0)
+            HEATER_OUT = 0;
+        else if (risingTemperature)
 			HEATER_OUT = temperature < activeProgram->max;
 		else
 			HEATER_OUT = temperature > activeProgram->min;
+        HEATER_INDICATOR_OUT = HEATER_OUT;
 	}
 }
