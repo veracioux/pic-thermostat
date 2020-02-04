@@ -14,10 +14,13 @@
 #define REQUEST_RX_TIME 'T'
 #define REQUEST_RX_CURRENT_PROGRAM '&'
 #define REQUEST_RX_PROGRAMS '>'
+#define REQUEST_RX_N_PROGRAMS 'N'
+#define REQUEST_RX_ISNULL '?'
 
 #define REQUEST_TX_TIME 't'
 #define REQUEST_TX_PROGRAM 'p'
 #define REQUEST_TX_PROGRAMS '<'
+#define REQUEST_TX_N_PROGRAMS 'n'
 
 unsigned char commTimeout = 0;
 

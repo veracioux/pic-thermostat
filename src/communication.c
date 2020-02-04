@@ -17,9 +17,10 @@ struct
     // Remaining number of bytes to send/receive
     unsigned char remaining;
     // Pointer to the next byte
-    char *ptrData;
-    // Flag that indicates the stage
-    char stage;
+    unsigned char *ptrData;
+    char type;
+    // Extra data, that is used in some RX/TX operations
+    unsigned char extra;
 } commStatus;
 
 void processTransmitInterrupt()
@@ -46,13 +47,14 @@ void processReceiveInterrupt()
         // Initiate send/receive based on requests sent by the PC
         if (!commFlags.BUSY)
         {
-            // TODO Change order so that REQUEST_TX come before, especially those that come before
             if (tmp == REQUEST_TX_PROGRAMS)
-                ; //TODO rethink
+                pc_read_programs(programs, commStatus.extra);
             else if (tmp == REQUEST_TX_PROGRAM)
                 ; // TODO rethink
             else if (tmp == REQUEST_TX_TIME)
                 pc_read_time(&currentTime);
+            else if (tmp == REQUEST_TX_N_PROGRAMS)
+                pc_read_data(&commStatus.extra, 1);
             else if (tmp == REQUEST_RX_TEMP)
                 pc_send_temp(&temperature);
             else if (tmp == REQUEST_RX_TIME)
@@ -60,15 +62,23 @@ void processReceiveInterrupt()
             else if (tmp == REQUEST_RX_CURRENT_PROGRAM)
                 pc_send_program(activeProgram);
             else if (tmp == REQUEST_RX_PROGRAMS)
-                ; //TODO rethink
-            
+                pc_send_programs(programs, programsSize);
+            else if (tmp == REQUEST_RX_ISNULL)
+                TXREG = (activeProgram == 0);
+            else if (tmp == REQUEST_RX_N_PROGRAMS)
+                pc_send_data(&programsSize, 1);
+            commStatus.type = tmp;
         }
         // Receive the current buffer
         else if (commFlags.RX)
         {
             commTimeout = 0;
             if (--commStatus.remaining == 0)
+            {
                 commFlags.BUSY = commFlags.RX = 0;
+                if (commStatus.type == REQUEST_TX_PROGRAMS)
+                    programsSize = commStatus.extra;
+            }
             *commStatus.ptrData++ = tmp;
         }
     }
