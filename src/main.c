@@ -48,6 +48,9 @@ void init_interrupt()
     RCIE = 1;   // Enable RX Interrupt
     RCIF = 0;
     
+    EEIE = 1;   // Enable interrupt on completed EEPROM write operation
+    EEIF = 0;
+    
     PEIE = 1;
     GIE = 1;    // Global Interrupt Enable
 }
@@ -96,6 +99,11 @@ void __interrupt() update()
         processTransmitInterrupt();
         TXIF = 0;
     }
+    if (EEIF)
+    {
+        EEIF = 0;
+        processDataInterrupt();
+    }
 }
 
 void main()
@@ -108,6 +116,8 @@ void main()
 	init_comms();
 
 	init_interrupt(); // Should be last to prevent unexpected behavior
+    
+    eeprom_read_programs(programs, &programsSize);
     
 	char previous = HEATER_OUT;
 	while (1)

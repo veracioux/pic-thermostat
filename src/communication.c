@@ -29,11 +29,16 @@ void processTransmitInterrupt()
     {
         if (commFlags.TX)
         {
+            TXREG = *commStatus.ptrData++;
             if (--commStatus.remaining == 0)
                 commFlags.BUSY = commFlags.TX = TXIE = 0;
-            TXREG = *commStatus.ptrData++;
         }
     }
+}
+
+void finalizeReceivePrograms(){
+    programsSize = commStatus.extra;
+    eeprom_store_programs(programs, programsSize);
 }
 
 void processReceiveInterrupt()
@@ -73,13 +78,13 @@ void processReceiveInterrupt()
         else if (commFlags.RX)
         {
             commTimeout = 0;
+            *commStatus.ptrData++ = tmp;
             if (--commStatus.remaining == 0)
             {
-                commFlags.BUSY = commFlags.RX = 0;
                 if (commStatus.type == REQUEST_TX_PROGRAMS)
-                    programsSize = commStatus.extra;
+                    finalizeReceivePrograms();
+                commFlags.BUSY = commFlags.RX = 0;
             }
-            *commStatus.ptrData++ = tmp;
         }
     }
 }

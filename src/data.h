@@ -28,8 +28,7 @@ union
         unsigned WRITE_ERR     : 1;
         unsigned READ_ERR      : 1;
     };
-} dataFlags_bits;
-#define dataFlags dataFlags_bits.value
+} dataFlags;
 
 void processDataInterrupt();
 
@@ -48,4 +47,4 @@ void eeprom_read_programs(struct Program *programs, unsigned char *size);
 
 void eeprom_write_byte(char address, char data);
 
-void eeprom_store_programs(struct Program *programs);
+void eeprom_store_programs(struct Program *programs, unsigned char nPrograms);

@@ -1,8 +1,19 @@
 #include "data.h"
 
+struct
+{
+    unsigned char remaining;
+    unsigned char address;
+    char *ptrData;
+} dataStatus;
+
 void processDataInterrupt()
 {
-    
+    if (!dataFlags.ONGOING_WRITE)
+        return;
+    eeprom_write_byte(dataStatus.address++, *dataStatus.ptrData++);
+    if (--dataStatus.remaining == 0)
+        dataFlags.ONGOING_WRITE = 0;
 }
 
 inline char eeprom_read_byte(char address)
@@ -30,7 +41,7 @@ void eeprom_read_programs(struct Program *programs, unsigned char *size)
     unsigned char n = eeprom_read_byte(addr++);
     if (n > PROGRAM_LIMIT)
     {
-        dataFlags_bits.READ_ERR = 1;
+        dataFlags.READ_ERR = 1;
         return;
     }
     *size = n;
@@ -43,7 +54,7 @@ void eeprom_write_byte(char address, char data)
     EEADRL = address;
     EEDATL = data;
     WREN = 1;
-    GIE = 1;
+    GIE = 0;
     EECON2 = 0x55;
     EECON2 = 0xAA;
     WR = 1;
@@ -51,7 +62,17 @@ void eeprom_write_byte(char address, char data)
     WREN = 0;
 }
 
-void eeprom_store_programs(struct Program *programs)
+void eeprom_store_programs(struct Program *programs, unsigned char nPrograms)
 {
+    if (dataFlags.ONGOING_WRITE)
+        return;
+    dataFlags.ONGOING_WRITE = 1;
     
+    // Write the size of the programs
+    eeprom_write_byte(eepromStartAddress, nPrograms);
+    
+    // Set up data for write on interrupt
+    dataStatus.address = eepromStartAddress + 1;
+    dataStatus.remaining = nPrograms * sizeof(struct Program);
+    dataStatus.ptrData = (char*) programs;
 }
