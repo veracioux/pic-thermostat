@@ -58,6 +58,17 @@ void init_interrupt()
 // Microseconds that have elapsed since the last increment of currentTime.timeOfDay
 unsigned long elapsedMicros = 0;
 
+void updateCurrentProgram()
+{
+    activeProgram = 0;
+    for (int i = 0; i < programsSize; ++i)
+    {
+        if (programs[i].start.day <= currentTime.day && currentTime.day <= programs[i].end.day
+                && programs[i].start.timeOfDay <= currentTime.timeOfDay && currentTime.timeOfDay < programs[i].end.timeOfDay)
+            activeProgram = programs + i;
+    }
+}
+
 void __interrupt() update()
 {
 	if (TMR0IF)
@@ -75,13 +86,7 @@ void __interrupt() update()
                 else
                     ++currentTime.day;
 			}
-            // Find the program that is currently active
-            for (int i = 0; i < PROGRAM_LIMIT; ++i)
-            {
-                if (programs[i].start.day >= currentTime.day && programs[i].end.day <= currentTime.day
-                        && programs[i].start.timeOfDay <= currentTime.timeOfDay && currentTime.timeOfDay < programs[i].end.timeOfDay)
-                    activeProgram = programs + i;
-            }
+            updateCurrentProgram();
 		}
         // Communications timeout
         if (commFlags.RX && ++commTimeout >= 2)
@@ -119,15 +124,15 @@ void main()
     
     eeprom_read_programs(programs, &programsSize);
     
-	char previous = HEATER_OUT;
+    updateCurrentProgram();
+    
 	while (1)
 	{
         read_temp();
-		if (previous != HEATER_OUT)
-		{
-			risingTemperature = !risingTemperature;
-			previous = HEATER_OUT;
-		}
+		if (temperature < activeProgram->min)
+            risingTemperature = 1;
+        else if (temperature > activeProgram->max)
+            risingTemperature = 0;
         
         // Turn heater relay on/off
         if (activeProgram == 0)
@@ -135,7 +140,7 @@ void main()
         else if (risingTemperature)
 			HEATER_OUT = temperature < activeProgram->max;
 		else
-			HEATER_OUT = temperature > activeProgram->min;
+			HEATER_OUT = temperature <= activeProgram->min;
         HEATER_INDICATOR_OUT = HEATER_OUT;
 	}
 }

@@ -93,6 +93,10 @@ void abortReceive()
 {
     commFlags.RX = commFlags.BUSY = 0;
     commTimeout = 0;
+    // If a programs receive operation was interrupted,
+    // restore the program data from the EEPROM
+    if (commStatus.type == REQUEST_TX_PROGRAMS)
+        eeprom_read_programs(programs, &programsSize);
 }
 
 void pc_send_data(void *data, unsigned char size)

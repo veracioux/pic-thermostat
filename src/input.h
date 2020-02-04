@@ -2,7 +2,7 @@
 
 #include "definitions.h"
 
-unsigned short temperature = 0x3031;
+unsigned short temperature = 0;
 
 void init_adc();
 
