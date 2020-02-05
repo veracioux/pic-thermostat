@@ -2,7 +2,8 @@
  * Define all constant parameters and specifications for the thermostat.
  * Should always be kept up-to-date with the documentation.
  */
-#pragma once
+#ifndef DEFINITIONS_H
+#define DEFINITIONS_H
 
 #include <xc.h>
 
@@ -80,3 +81,5 @@ struct Program
 	struct Time start, end;
 	unsigned short min, max;
 };
+
+#endif

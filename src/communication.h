@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COMMUNICATION_H
+#define COMMUNICATION_H
 
 #include <xc.h>
 #include "definitions.h"
@@ -154,3 +155,5 @@ void pc_send_time(struct Time *time);
  * @param time - Pointer to the destination
  */
 void pc_read_time(struct Time *time);
+
+#endif

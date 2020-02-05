@@ -3,7 +3,8 @@
  * Additionally, this header holds data about all stored
  * programs and parameters of the currently active program
  */
-#pragma once
+#ifndef DATA_H
+#define DATA_H
 
 #include "definitions.h"
 
@@ -50,3 +51,5 @@ void eeprom_read_programs(struct Program *programs, unsigned char *size);
 void eeprom_write_byte(char address, char data);
 
 void eeprom_store_programs(struct Program *programs, unsigned char nPrograms);
+
+#endif

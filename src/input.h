@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INPUT_H
+#define INPUT_H
 
 #include "definitions.h"
 
@@ -8,3 +9,5 @@ void init_adc();
 
 //TODO Determine correct return type
 void read_temp();
+
+#endif
