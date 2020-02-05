@@ -57,7 +57,10 @@ void eeprom_read_programs(struct Program *programs, unsigned char *size)
     }
     *size = n;
     while (n--)
-        eeprom_read_data(addr++, sizeof(struct Program), programs++);
+    {
+        eeprom_read_data(addr, sizeof(struct Program), programs++);
+        addr += sizeof(struct Program);
+    }
 }
 
 void eeprom_write_byte(char address, char data)
