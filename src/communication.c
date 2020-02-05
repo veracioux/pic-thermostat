@@ -36,8 +36,10 @@ void processTransmitInterrupt()
     }
 }
 
-void finalizeReceivePrograms(){
+void finalizeReceivePrograms()
+{
     programsSize = commStatus.extra;
+    updateActiveProgram();
     eeprom_store_programs(programs, programsSize);
 }
 
@@ -83,6 +85,8 @@ void processReceiveInterrupt()
             {
                 if (commStatus.type == REQUEST_TX_PROGRAMS)
                     finalizeReceivePrograms();
+                else if (commStatus.type == REQUEST_TX_TIME)
+                    updateActiveProgram();
                 commFlags.BUSY = commFlags.RX = 0;
             }
         }

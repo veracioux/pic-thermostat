@@ -32,6 +32,8 @@ union
 
 void processDataInterrupt();
 
+void updateActiveProgram();
+
 inline char eeprom_read_byte(char address);
 
 /*

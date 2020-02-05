@@ -16,6 +16,17 @@ void processDataInterrupt()
         dataFlags.ONGOING_WRITE = 0;
 }
 
+void updateActiveProgram()
+{
+    activeProgram = 0;
+    for (int i = 0; i < programsSize; ++i)
+    {
+        if (programs[i].start.day <= currentTime.day && currentTime.day <= programs[i].end.day
+                && programs[i].start.timeOfDay <= currentTime.timeOfDay && currentTime.timeOfDay < programs[i].end.timeOfDay)
+            activeProgram = programs + i;
+    }
+}
+
 inline char eeprom_read_byte(char address)
 {
     EEADRL = address;

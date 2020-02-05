@@ -58,19 +58,23 @@ void init_interrupt()
 // Microseconds that have elapsed since the last increment of currentTime.timeOfDay
 unsigned long elapsedMicros = 0;
 
-void updateCurrentProgram()
-{
-    activeProgram = 0;
-    for (int i = 0; i < programsSize; ++i)
-    {
-        if (programs[i].start.day <= currentTime.day && currentTime.day <= programs[i].end.day
-                && programs[i].start.timeOfDay <= currentTime.timeOfDay && currentTime.timeOfDay < programs[i].end.timeOfDay)
-            activeProgram = programs + i;
-    }
-}
-
 void __interrupt() update()
 {
+    if (RCIF)
+    {
+        processReceiveInterrupt();
+        RCIF = 0;
+    }
+    else if (TXIE && TXIF)
+    {
+        processTransmitInterrupt();
+        TXIF = 0;
+    }
+    else if (EEIF)
+    {
+        EEIF = 0;
+        processDataInterrupt();
+    }
 	if (TMR0IF)
 	{
 		elapsedMicros += TIME_UPDATE_MICROS;
@@ -86,29 +90,13 @@ void __interrupt() update()
                 else
                     ++currentTime.day;
 			}
-            updateCurrentProgram();
+            updateActiveProgram();
 		}
         // Communications timeout
         if (commFlags.RX && ++commTimeout >= 2)
             abortReceive();
         TMR0IF = 0;
 	}
-    //TODO Test if ADC has triggered an interrupt. If yes, send the current temperature to PC
-    if (RCIF)
-    {
-        processReceiveInterrupt();
-        RCIF = 0;
-    }
-    else if (TXIF)
-    {
-        processTransmitInterrupt();
-        TXIF = 0;
-    }
-    if (EEIF)
-    {
-        EEIF = 0;
-        processDataInterrupt();
-    }
 }
 
 void main()
@@ -124,7 +112,7 @@ void main()
     
     eeprom_read_programs(programs, &programsSize);
     
-    updateCurrentProgram();
+    updateActiveProgram();
     
 	while (1)
 	{
