@@ -13,7 +13,7 @@ char risingTemperature = 1;
 void init_pins()
 {
     TRISA = 0xFF;
-    ANSELA = 1;
+    ANSELA = 0xFF;
     
     TRISC = 0b10111110;
     
