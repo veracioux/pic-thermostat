@@ -5,6 +5,8 @@
 
 unsigned short temperature = 0;
 
+void processInputInterrupt();
+
 void init_adc();
 
 //TODO Determine correct return type

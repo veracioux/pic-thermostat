@@ -1,5 +1,10 @@
 #include "input.h"
 
+void processInputInterrupt()
+{
+    temperature = (((short) ADRESH) << 8) + ADRESL;
+}
+
 void init_adc()
 {
 	ADCON1bits.ADCS = 0; // Fosc/2
@@ -19,6 +24,4 @@ void init_adc()
 void read_temp()
 {
 	ADGO = 1;     // Initiate AD conversion
-	while (ADGO); // Wait for AD conversion to end
-	temperature = (((short) ADRESH) << 8) + ADRESL;
 }

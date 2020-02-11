@@ -51,6 +51,9 @@ void init_interrupt()
     EEIE = 1;   // Enable interrupt on completed EEPROM write operation
     EEIF = 0;
     
+    ADIE = 1;   // Enable A/D conversion interrupts
+    ADIF = 0;
+    
     PEIE = 1;
     GIE = 1;    // Global Interrupt Enable
 }
@@ -74,6 +77,11 @@ void __interrupt() update()
     {
         EEIF = 0;
         processDataInterrupt();
+    }
+    else if (ADIF)
+    {
+        processInputInterrupt();
+        ADIF = 0;
     }
 	if (TMR0IF)
 	{
