@@ -14,9 +14,9 @@ void init_pins()
 {
     TRISA = 0xFF;
     ANSELA = 0xFF;
-    
+
     TRISC = 0b10111110;
-    
+
     TRISD = 0b11111110;
     ANSELD = 0;
 }
@@ -33,7 +33,7 @@ void init_eeprom()
 		If it is lower than VERSION_CODE, read all the programs as appropriate
 		and store the VERSION_CODE and the programs in EEPROM using the new scheme.
 	*/
-    
+
     eeprom_read_programs(programs, &programsSize);
 }
 
@@ -43,19 +43,40 @@ void init_interrupt()
     TMR0IE = 1; // Enable Timer0 interrupt
     TMR0CS = 0; // Select internal instruction cycle clock
     SET_TMR0_PARAMS()
-            
+
     TXIE = 0;   // Disable TX Interrupt until a request is received
     RCIE = 1;   // Enable RX Interrupt
     RCIF = 0;
-    
+
     EEIE = 1;   // Enable interrupt on completed EEPROM write operation
     EEIF = 0;
-    
+
     ADIE = 1;   // Enable A/D conversion interrupts
     ADIF = 0;
-    
+
     PEIE = 1;
     GIE = 1;    // Global Interrupt Enable
+}
+
+void updateHeater()
+{
+    read_temp();
+    if (activeProgram == 0)
+    {
+        HEATER_INDICATOR_OUT = HEATER_OUT = 0;
+        return;
+    }
+    if (temperature < activeProgram->min)
+        risingTemperature = 1;
+    else if (temperature > activeProgram->max)
+        risingTemperature = 0;
+
+    // Turn heater relay on/off
+    if (risingTemperature)
+        HEATER_OUT = temperature < activeProgram->max;
+    else
+        HEATER_OUT = temperature <= activeProgram->min;
+    HEATER_INDICATOR_OUT = HEATER_OUT;
 }
 
 // Microseconds that have elapsed since the last increment of currentTime.timeOfDay
@@ -68,17 +89,17 @@ void __interrupt() update()
         processReceiveInterrupt();
         RCIF = 0;
     }
-    else if (TXIE && TXIF)
+    if (TXIE && TXIF)
     {
         processTransmitInterrupt();
         TXIF = 0;
     }
-    else if (EEIF)
+    if (EEIF)
     {
         EEIF = 0;
         processDataInterrupt();
     }
-    else if (ADIF)
+    if (ADIF)
     {
         processInputInterrupt();
         ADIF = 0;
@@ -117,26 +138,10 @@ void main()
 	init_comms();
 
 	init_interrupt(); // Should be last to prevent unexpected behavior
-    
+
     eeprom_read_programs(programs, &programsSize);
-    
+
     updateActiveProgram();
-    
 	while (1)
-	{
-        read_temp();
-		if (temperature < activeProgram->min)
-            risingTemperature = 1;
-        else if (temperature > activeProgram->max)
-            risingTemperature = 0;
-        
-        // Turn heater relay on/off
-        if (activeProgram == 0)
-            HEATER_OUT = 0;
-        else if (risingTemperature)
-			HEATER_OUT = temperature < activeProgram->max;
-		else
-			HEATER_OUT = temperature <= activeProgram->min;
-        HEATER_INDICATOR_OUT = HEATER_OUT;
-	}
+        updateHeater();
 }
